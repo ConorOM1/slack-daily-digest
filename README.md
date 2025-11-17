@@ -17,16 +17,27 @@ An AI-powered agent that monitors your Slack channels and sends you a curated da
 
 **Get your User Token and Cookie (from Slack Desktop App):**
 
+**Step 1: Get your Token (xoxc-...)**
+
 1. Open Slack Desktop App
 2. Press **Cmd + Option + I** (opens DevTools)
 3. Go to **Console** tab
-4. Paste this and hit Enter:
+4. Paste this command and hit Enter:
    ```javascript
-   window.TS.boot_data.api_token
+   JSON.parse(localStorage.localConfig_v2)["teams"]
    ```
-5. Copy the token (starts with `xoxc-`)
-6. Go to **Application** tab → **Cookies** → find your workspace
-7. Copy the `d` cookie value (starts with `xoxd-`)
+5. Look through the output and find your token starting with **`xoxc-`**
+6. Copy the entire token value
+
+**Step 2: Get your Cookie (xoxd-...)**
+
+1. Still in DevTools, go to **Application** tab (at the top)
+2. On the left sidebar, expand **Cookies** (click the arrow)
+3. Click on your workspace URL (e.g., `https://yourworkspace.slack.com`)
+4. In the cookie table on the right, scroll and find the cookie named **`d`**
+5. Click on it and copy its **Value** column (starts with **`xoxd-`**)
+
+**Tip:** The `d` cookie is usually near the top of the cookie list
 
 **Get Your User ID:**
 
@@ -170,10 +181,16 @@ ollama pull llama3.1:8b
 ### Token Expired
 
 User tokens can expire when you log out or change passwords. Get new ones:
-```bash
-# In Slack DevTools Console:
-window.TS.boot_data.api_token
-```
+
+1. Open Slack Desktop App → **Cmd + Option + I**
+2. **Console** tab → Run:
+   ```javascript
+   JSON.parse(localStorage.localConfig_v2)["teams"]
+   ```
+3. Copy the new **`xoxc-`** token
+4. **Application** tab → **Cookies** → find `d` cookie
+5. Copy the new **`xoxd-`** value
+6. Update both in your `.env` file
 
 ### "channel_not_found" Error
 

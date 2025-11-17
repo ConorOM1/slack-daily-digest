@@ -121,7 +121,7 @@ Focus on:
 - Valuable insights or discussions
 - Action items that need attention
 - News or information that would be valuable to know
-- UI bugs or any quality issues that may affect the dashboard
+- UI bugs or any quality issues that have been reported
 - Any direct mentions of me that i need to give attention to
 
 Ignore:
