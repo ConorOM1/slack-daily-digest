@@ -83,10 +83,40 @@ class SlackDigestAgent:
                     except:
                         username = 'Unknown User'
                     
+                    # Check if message has thread replies
+                    thread_text = ""
+                    if msg.get('reply_count', 0) > 0:
+                        try:
+                            # Fetch thread replies
+                            thread_result = self.slack_client.conversations_replies(
+                                channel=channel_id,
+                                ts=msg_ts
+                            )
+                            
+                            # Get all replies (excluding the parent message which is first)
+                            thread_messages = thread_result['messages'][1:]  # Skip parent message
+                            
+                            if thread_messages:
+                                thread_text = "\n  Thread replies:"
+                                for reply in thread_messages:
+                                    reply_user_id = reply.get('user', 'Unknown')
+                                    reply_text = reply.get('text', '')
+                                    
+                                    # Get reply username
+                                    try:
+                                        reply_user_info = self.slack_client.users_info(user=reply_user_id)
+                                        reply_username = reply_user_info['user']['real_name'] or reply_user_info['user']['name']
+                                    except:
+                                        reply_username = 'Unknown User'
+                                    
+                                    thread_text += f"\n    - {reply_username}: {reply_text}"
+                        except SlackApiError as e:
+                            print(f"  Warning: Could not fetch thread replies for message {msg_ts}: {e.response['error']}")
+                    
                     formatted_messages.append({
                         'channel': channel_name,
                         'user': username,
-                        'text': text,
+                        'text': text + thread_text,
                         'timestamp': timestamp,
                         'link': slack_link
                     })
@@ -123,6 +153,7 @@ Focus on:
 - News or information that would be valuable to know
 - UI bugs or any quality issues that have been reported
 - Any direct mentions of me that i need to give attention to
+- **THREAD REPLIES**: Pay special attention to thread replies as they often contain resolutions, solutions, or important follow-up information to issues
 
 Ignore:
 - Casual conversations
@@ -130,20 +161,20 @@ Ignore:
 - Routine status updates with no significant information
 - Off-topic chatter
 
-Here are the messages:
+Here are the messages (including thread replies):
 
 {messages_text}
 
 Please provide a concise daily digest organized by importance. Use this format:
 
 🔴 CRITICAL / URGENT
-[List any urgent items that need immediate attention]
+[List any urgent items that need immediate attention. If a thread has replies with a resolution, mention the resolution.]
 
 🟡 IMPORTANT UPDATES
-[List significant updates, decisions, or announcements]
+[List significant updates, decisions, or announcements. Include resolutions from thread replies if applicable.]
 
 🟢 NOTABLE DISCUSSIONS
-[List interesting discussions or insights worth knowing]
+[List interesting discussions or insights worth knowing. Note any conclusions reached in thread replies.]
 
 IMPORTANT: Add a clickable link INLINE at the end of EACH bullet point (not on a separate line).
 Use this EXACT format at the END of the sentence: (<URL|link>)
@@ -169,13 +200,6 @@ Keep it concise and actionable."""
             
             result = response.json()
             ai_summary = result.get('response', 'No response from AI')
-            
-            # Add sources/references section with links
-            if all_messages:
-                sources = "\n\n" + "─" * 50 + "\n\n*📎 Sources:*\n"
-                for i, msg in enumerate(all_messages, 1):
-                    sources += f"{i}. *{msg['channel']}* - {msg['user']} ({msg['timestamp']}): <{msg['link']}|link>\n"
-                return ai_summary + sources
             
             return ai_summary
             
