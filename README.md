@@ -11,6 +11,14 @@ An AI-powered agent that monitors your Slack channels and sends you a curated da
 - 🎯 Filters out noise and focuses on important content
 - 🔒 **Private** - no external API calls, all AI processing happens locally
 
+## Why This Approach?
+
+✅ **No Slack App Needed** - Uses your personal token  
+✅ **100% Free** - Ollama runs locally, no API costs  
+✅ **Private** - AI processing stays on your Mac  
+✅ **Fast** - No network delays for AI  
+✅ **Works at Work** - Doesn't require admin permissions  
+
 ## Quick Start
 
 ### 1. Get Your Slack Credentials
@@ -267,14 +275,6 @@ Every weekday at 8:30 AM:
 - **`requirements.txt`** - Python dependencies
 - **`digest.log`** - History of runs
 - **`list_channels.py`** - Helper to list available channels
-
-## Why This Approach?
-
-✅ **No Slack App Needed** - Uses your personal token  
-✅ **100% Free** - Ollama runs locally, no API costs  
-✅ **Private** - AI processing stays on your Mac  
-✅ **Fast** - No network delays for AI  
-✅ **Works at Work** - Doesn't require admin permissions  
 
 ## Security Notes
 
